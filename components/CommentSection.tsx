@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { getSupabase, Comment } from '@/lib/supabase'
+import { optimizeImages } from '@/lib/imageUtils'
 
 const MAX_PHOTOS = 4
 
@@ -36,8 +37,9 @@ export default function CommentSection({ restaurantId }: { restaurantId: string 
   }
 
   const uploadCommentPhotos = async (commentId: string) => {
-    for (const file of photos) {
-      const ext = file.name.split('.').pop()
+    const optimized = await optimizeImages(photos)
+    for (const file of optimized) {
+      const ext = file.type === 'image/webp' ? 'webp' : file.name.split('.').pop()
       const path = `comments/${restaurantId}/${commentId}/${Date.now()}.${ext}`
       const { error: uploadError } = await getSupabase()
         .storage.from('restaurant-photos').upload(path, file)
