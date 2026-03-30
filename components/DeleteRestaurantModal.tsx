@@ -39,6 +39,23 @@ export default function DeleteRestaurantModal({ restaurant, onClose, onDeleted }
 
     // Delete in order to respect foreign keys
     await supabase.from('restaurant_tags').delete().eq('restaurant_id', restaurant.id)
+
+    // Clean up comment photos from storage before deleting comments
+    const { data: commentFolders } = await supabase.storage
+      .from('restaurant-photos')
+      .list(`comments/${restaurant.id}`, { limit: 1000 })
+    if (commentFolders && commentFolders.length > 0) {
+      for (const item of commentFolders) {
+        const { data: innerFiles } = await supabase.storage
+          .from('restaurant-photos')
+          .list(`comments/${restaurant.id}/${item.name}`)
+        if (innerFiles && innerFiles.length > 0) {
+          const paths = innerFiles.map(f => `comments/${restaurant.id}/${item.name}/${f.name}`)
+          await supabase.storage.from('restaurant-photos').remove(paths)
+        }
+      }
+    }
+
     await supabase.from('comments').delete().eq('restaurant_id', restaurant.id)
 
     // Delete photos from storage and table

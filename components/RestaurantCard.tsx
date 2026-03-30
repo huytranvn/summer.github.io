@@ -5,6 +5,15 @@ import Image from 'next/image'
 import { Restaurant } from '@/lib/supabase'
 import CommentSection from './CommentSection'
 import DeleteRestaurantModal from './DeleteRestaurantModal'
+import AddRestaurantForm from './AddRestaurantForm'
+
+function formatTime(time: string | null): string {
+  if (!time) return '—'
+  const [h, m] = time.split(':').map(Number)
+  const ampm = h >= 12 ? 'PM' : 'AM'
+  const hour = h % 12 || 12
+  return `${hour}:${m.toString().padStart(2, '0')} ${ampm}`
+}
 
 type Props = {
   restaurant: Restaurant
@@ -15,6 +24,7 @@ export default function RestaurantCard({ restaurant, onDeleted }: Props) {
   const [showComments, setShowComments] = useState(false)
   const [lightbox, setLightbox] = useState<string | null>(null)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [showEditForm, setShowEditForm] = useState(false)
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
@@ -54,11 +64,29 @@ export default function RestaurantCard({ restaurant, onDeleted }: Props) {
                 <span className="underline underline-offset-2">{restaurant.location}</span>
               </a>
             )}
+            {(restaurant.is_all_day || restaurant.open_time || restaurant.close_time) && (
+              <p className="text-sm text-gray-500 mt-0.5 flex items-center gap-1">
+                <span>🕐</span>
+                {restaurant.is_all_day
+                  ? 'All day'
+                  : `${formatTime(restaurant.open_time)} – ${formatTime(restaurant.close_time)}`}
+              </p>
+            )}
           </div>
           <div className="flex items-center gap-1.5 shrink-0 mt-0.5">
             <span className="text-xs text-gray-400 bg-gray-50 px-2.5 py-1 rounded-full">
               {new Date(restaurant.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
             </span>
+            <button
+              onClick={() => setShowEditForm(true)}
+              className="text-gray-300 hover:text-orange-400 transition-colors p-1 rounded-lg hover:bg-orange-50"
+              title="Edit restaurant"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                <path d="m15 5 4 4" />
+              </svg>
+            </button>
             <button
               onClick={() => setShowDeleteModal(true)}
               className="text-gray-300 hover:text-red-400 transition-colors p-1 rounded-lg hover:bg-red-50"
@@ -103,6 +131,19 @@ export default function RestaurantCard({ restaurant, onDeleted }: Props) {
           {showComments && <CommentSection restaurantId={restaurant.id} />}
         </div>
       </div>
+
+      {/* Edit form modal */}
+      {showEditForm && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={() => setShowEditForm(false)}>
+          <div className="w-full max-w-xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <AddRestaurantForm
+              restaurant={restaurant}
+              onAdded={onDeleted}
+              onClose={() => setShowEditForm(false)}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Delete modal */}
       {showDeleteModal && (

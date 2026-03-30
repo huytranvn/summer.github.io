@@ -18,6 +18,9 @@ export type Restaurant = {
   description: string | null
   location: string | null
   place_id: string | null
+  open_time: string | null
+  close_time: string | null
+  is_all_day: boolean
   created_at: string
   photos?: Photo[]
   tags?: Tag[]
@@ -34,10 +37,17 @@ export type Tag = {
   name: string
 }
 
+export type CommentPhoto = {
+  id: string
+  comment_id: string
+  url: string
+}
+
 export type Comment = {
   id: string
   restaurant_id: string
   author_name: string | null
   content: string
   created_at: string
+  comment_photos?: CommentPhoto[]
 }

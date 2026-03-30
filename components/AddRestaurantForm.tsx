@@ -1,17 +1,29 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { getSupabase, Tag } from '@/lib/supabase'
+import { getSupabase, Restaurant, Tag, Photo } from '@/lib/supabase'
 
-export default function AddRestaurantForm({ onAdded }: { onAdded: () => void }) {
-  const [open, setOpen] = useState(false)
-  const [name, setName] = useState('')
-  const [location, setLocation] = useState('')
-  const [placeId, setPlaceId] = useState<string | null>(null)
-  const [description, setDescription] = useState('')
+type Props = {
+  onAdded: () => void
+  restaurant?: Restaurant
+  onClose?: () => void
+}
+
+export default function AddRestaurantForm({ onAdded, restaurant: editRestaurant, onClose }: Props) {
+  const isEdit = !!editRestaurant
+  const [open, setOpen] = useState(isEdit)
+  const [name, setName] = useState(editRestaurant?.name ?? '')
+  const [location, setLocation] = useState(editRestaurant?.location ?? '')
+  const [placeId, setPlaceId] = useState<string | null>(editRestaurant?.place_id ?? null)
+  const [description, setDescription] = useState(editRestaurant?.description ?? '')
   const [tagInput, setTagInput] = useState('')
-  const [selectedTags, setSelectedTags] = useState<string[]>([])
+  const [selectedTags, setSelectedTags] = useState<string[]>(editRestaurant?.tags?.map((t) => t.name) ?? [])
   const [allTags, setAllTags] = useState<Tag[]>([])
+  const [openTime, setOpenTime] = useState(editRestaurant?.open_time?.slice(0, 5) ?? '')
+  const [closeTime, setCloseTime] = useState(editRestaurant?.close_time?.slice(0, 5) ?? '')
+  const [isAllDay, setIsAllDay] = useState(editRestaurant?.is_all_day ?? false)
+  const [existingPhotos, setExistingPhotos] = useState<Photo[]>(editRestaurant?.photos ?? [])
+  const [removedPhotoIds, setRemovedPhotoIds] = useState<string[]>([])
   const [photos, setPhotos] = useState<File[]>([])
   const [previews, setPreviews] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
@@ -58,46 +70,107 @@ export default function AddRestaurantForm({ onAdded }: { onAdded: () => void }) 
     setPreviews(arr.map((f) => URL.createObjectURL(f)))
   }
 
+  const removeExistingPhoto = (photo: Photo) => {
+    setRemovedPhotoIds([...removedPhotoIds, photo.id])
+    setExistingPhotos(existingPhotos.filter((p) => p.id !== photo.id))
+  }
+
+  const uploadPhotos = async (restaurantId: string) => {
+    for (const file of photos) {
+      const ext = file.name.split('.').pop()
+      const path = `${restaurantId}/${Date.now()}.${ext}`
+      const { error: uploadError } = await getSupabase().storage.from('restaurant-photos').upload(path, file)
+      if (uploadError) throw uploadError
+      const { data: urlData } = getSupabase().storage.from('restaurant-photos').getPublicUrl(path)
+      await getSupabase().from('photos').insert({ restaurant_id: restaurantId, url: urlData.publicUrl })
+    }
+  }
+
+  const syncTags = async (restaurantId: string) => {
+    // Remove old tags and re-insert
+    if (isEdit) {
+      await getSupabase().from('restaurant_tags').delete().eq('restaurant_id', restaurantId)
+    }
+    for (const tagName of selectedTags) {
+      const { data: tag } = await getSupabase()
+        .from('tags')
+        .upsert({ name: tagName }, { onConflict: 'name' })
+        .select()
+        .single()
+      if (tag) {
+        await getSupabase().from('restaurant_tags').insert({ restaurant_id: restaurantId, tag_id: tag.id })
+      }
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!name.trim()) return
     setLoading(true)
     setError(null)
 
+    const payload = {
+      name: name.trim(),
+      location: location.trim() || null,
+      description: description.trim() || null,
+      place_id: placeId,
+      open_time: isAllDay ? null : openTime || null,
+      close_time: isAllDay ? null : closeTime || null,
+      is_all_day: isAllDay,
+    }
+
     try {
-      const { data: restaurant, error: restError } = await getSupabase()
-        .from('restaurants')
-        .insert({ name: name.trim(), location: location.trim() || null, description: description.trim() || null, place_id: placeId })
-        .select()
-        .single()
-      if (restError) throw restError
+      let restaurantId: string
 
-      for (const file of photos) {
-        const ext = file.name.split('.').pop()
-        const path = `${restaurant.id}/${Date.now()}.${ext}`
-        const { error: uploadError } = await getSupabase().storage.from('restaurant-photos').upload(path, file)
-        if (uploadError) throw uploadError
-        const { data: urlData } = getSupabase().storage.from('restaurant-photos').getPublicUrl(path)
-        await getSupabase().from('photos').insert({ restaurant_id: restaurant.id, url: urlData.publicUrl })
-      }
+      if (isEdit) {
+        const { error: updateError } = await getSupabase()
+          .from('restaurants')
+          .update(payload)
+          .eq('id', editRestaurant.id)
+        if (updateError) throw updateError
+        restaurantId = editRestaurant.id
 
-      for (const tagName of selectedTags) {
-        const { data: tag } = await getSupabase()
-          .from('tags')
-          .upsert({ name: tagName }, { onConflict: 'name' })
+        // Remove deleted photos
+        for (const photoId of removedPhotoIds) {
+          const photo = editRestaurant.photos?.find((p) => p.id === photoId)
+          if (photo) {
+            const parts = photo.url.split('/restaurant-photos/')
+            if (parts.length > 1) {
+              await getSupabase().storage.from('restaurant-photos').remove([parts[1]])
+            }
+          }
+          await getSupabase().from('photos').delete().eq('id', photoId)
+        }
+      } else {
+        const { data: restaurant, error: restError } = await getSupabase()
+          .from('restaurants')
+          .insert(payload)
           .select()
           .single()
-        if (tag) {
-          await getSupabase().from('restaurant_tags').insert({ restaurant_id: restaurant.id, tag_id: tag.id })
-        }
+        if (restError) throw restError
+        restaurantId = restaurant.id
       }
 
-      setName(''); setLocation(''); setDescription('')
-      setPlaceId(null); setSelectedTags([]); setTagInput('')
-      setPhotos([]); setPreviews([])
-      if (fileRef.current) fileRef.current.value = ''
+      await uploadPhotos(restaurantId)
+      await syncTags(restaurantId)
+
+      if (!isEdit) {
+        setName(''); setLocation(''); setDescription('')
+        setPlaceId(null); setSelectedTags([]); setTagInput('')
+        setOpenTime(''); setCloseTime(''); setIsAllDay(false)
+        setPhotos([]); setPreviews([])
+        if (fileRef.current) fileRef.current.value = ''
+      }
+
       setSuccess(true)
-      setTimeout(() => { setSuccess(false); setOpen(false) }, 1500)
+      setTimeout(() => {
+        setSuccess(false)
+        if (isEdit) {
+          onClose?.()
+        } else {
+          setOpen(false)
+        }
+      }, 1500)
       onAdded()
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
@@ -110,27 +183,17 @@ export default function AddRestaurantForm({ onAdded }: { onAdded: () => void }) 
     (t) => tagInput && t.name.includes(tagInput.toLowerCase()) && !selectedTags.includes(t.name)
   )
 
-  return (
-    <div className="mb-8">
-      {!open ? (
-        <button
-          onClick={() => setOpen(true)}
-          className="w-full flex items-center justify-center gap-2 bg-white border-2 border-dashed border-orange-300 hover:border-orange-400 hover:bg-orange-50 text-orange-500 font-semibold py-4 rounded-2xl transition-all group"
-        >
-          <span className="text-xl group-hover:scale-110 transition-transform">+</span>
-          Add a new spot
-        </button>
-      ) : (
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white rounded-2xl shadow-lg border border-orange-100 overflow-hidden"
-        >
+  const formContent = (
+    <form
+      onSubmit={handleSubmit}
+      className="bg-white rounded-2xl shadow-lg border border-orange-100 overflow-hidden"
+    >
           {/* Form header */}
           <div className="bg-gradient-to-r from-orange-500 to-rose-400 px-6 py-4 flex items-center justify-between">
-            <h2 className="text-white font-bold text-lg">New Restaurant</h2>
+            <h2 className="text-white font-bold text-lg">{isEdit ? 'Edit Restaurant' : 'New Restaurant'}</h2>
             <button
               type="button"
-              onClick={() => setOpen(false)}
+              onClick={() => isEdit ? onClose?.() : setOpen(false)}
               className="text-white/70 hover:text-white text-2xl leading-none"
             >
               ×
@@ -180,6 +243,44 @@ export default function AddRestaurantForm({ onAdded }: { onAdded: () => void }) 
                 rows={3}
                 className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent transition resize-none"
               />
+            </div>
+
+            {/* Operating Hours */}
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+                Operating Hours
+              </label>
+              <label className="inline-flex items-center gap-2 cursor-pointer mb-3">
+                <input
+                  type="checkbox"
+                  checked={isAllDay}
+                  onChange={(e) => setIsAllDay(e.target.checked)}
+                  className="w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-300"
+                />
+                <span className="text-sm text-gray-600">All day</span>
+              </label>
+              {!isAllDay && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs text-gray-400 mb-1">Open</label>
+                    <input
+                      type="time"
+                      value={openTime}
+                      onChange={(e) => setOpenTime(e.target.value)}
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent transition"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-400 mb-1">Close</label>
+                    <input
+                      type="time"
+                      value={closeTime}
+                      onChange={(e) => setCloseTime(e.target.value)}
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent transition"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Tags */}
@@ -247,6 +348,23 @@ export default function AddRestaurantForm({ onAdded }: { onAdded: () => void }) 
                   className="hidden"
                 />
               </label>
+              {existingPhotos.length > 0 && (
+                <div className="mt-2 flex gap-2 overflow-x-auto pb-1">
+                  {existingPhotos.map((photo) => (
+                    <div key={photo.id} className="relative shrink-0">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={photo.url} alt="existing" className="w-16 h-16 rounded-lg object-cover border border-gray-200" />
+                      <button
+                        type="button"
+                        onClick={() => removeExistingPhoto(photo)}
+                        className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center hover:bg-red-600"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
               {previews.length > 0 && (
                 <div className="mt-2 flex gap-2 overflow-x-auto pb-1">
                   {previews.map((src, i) => (
@@ -269,7 +387,7 @@ export default function AddRestaurantForm({ onAdded }: { onAdded: () => void }) 
             )}
             {success && (
               <div className="bg-green-50 border border-green-200 text-green-700 text-sm rounded-xl px-4 py-3 flex items-center gap-2">
-                <span>✓</span> Restaurant added!
+                <span>✓</span> {isEdit ? 'Restaurant updated!' : 'Restaurant added!'}
               </div>
             )}
 
@@ -278,10 +396,26 @@ export default function AddRestaurantForm({ onAdded }: { onAdded: () => void }) 
               disabled={loading || !name.trim()}
               className="w-full bg-gradient-to-r from-orange-500 to-rose-400 hover:from-orange-600 hover:to-rose-500 disabled:opacity-50 text-white font-bold py-3 rounded-xl text-sm tracking-wide shadow-sm transition-all"
             >
-              {loading ? 'Saving...' : 'Save Restaurant'}
+              {loading ? 'Saving...' : isEdit ? 'Update Restaurant' : 'Save Restaurant'}
             </button>
           </div>
-        </form>
+    </form>
+  )
+
+  if (isEdit) return formContent
+
+  return (
+    <div className="mb-8">
+      {!open ? (
+        <button
+          onClick={() => setOpen(true)}
+          className="w-full flex items-center justify-center gap-2 bg-white border-2 border-dashed border-orange-300 hover:border-orange-400 hover:bg-orange-50 text-orange-500 font-semibold py-4 rounded-2xl transition-all group"
+        >
+          <span className="text-xl group-hover:scale-110 transition-transform">+</span>
+          Add a new spot
+        </button>
+      ) : (
+        formContent
       )}
     </div>
   )
