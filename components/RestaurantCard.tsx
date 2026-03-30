@@ -27,10 +27,10 @@ export default function RestaurantCard({ restaurant, onDeleted }: Props) {
   const [showEditForm, setShowEditForm] = useState(false)
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
+    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow">
       {/* Photo strip */}
       {restaurant.photos && restaurant.photos.length > 0 && (
-        <div className="flex gap-1 overflow-x-auto bg-gray-50">
+        <div className="flex gap-1 overflow-x-auto bg-gray-50 dark:bg-gray-700">
           {restaurant.photos.map((photo) => (
             <button
               key={photo.id}
@@ -48,7 +48,7 @@ export default function RestaurantCard({ restaurant, onDeleted }: Props) {
         {/* Title row */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
-            <h3 className="text-lg font-bold text-gray-900 truncate">{restaurant.name}</h3>
+            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 truncate">{restaurant.name}</h3>
             {restaurant.location && (
               <a
                 href={
@@ -58,14 +58,14 @@ export default function RestaurantCard({ restaurant, onDeleted }: Props) {
                 }
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-gray-500 mt-0.5 flex items-center gap-1 hover:text-orange-500 transition-colors w-fit"
+                className="text-sm text-gray-500 dark:text-gray-400 mt-0.5 flex items-center gap-1 hover:text-orange-500 transition-colors w-fit"
               >
                 <span>📍</span>
                 <span className="underline underline-offset-2">{restaurant.location}</span>
               </a>
             )}
             {(restaurant.is_all_day || restaurant.open_time || restaurant.close_time) && (
-              <p className="text-sm text-gray-500 mt-0.5 flex items-center gap-1">
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5 flex items-center gap-1">
                 <span>🕐</span>
                 {restaurant.is_all_day
                   ? 'All day'
@@ -74,12 +74,12 @@ export default function RestaurantCard({ restaurant, onDeleted }: Props) {
             )}
           </div>
           <div className="flex items-center gap-1.5 shrink-0 mt-0.5">
-            <span className="text-xs text-gray-400 bg-gray-50 px-2.5 py-1 rounded-full">
+            <span className="text-xs text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700 px-2.5 py-1 rounded-full">
               {new Date(restaurant.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
             </span>
             <button
               onClick={() => setShowEditForm(true)}
-              className="text-gray-300 hover:text-orange-400 transition-colors p-1 rounded-lg hover:bg-orange-50"
+              className="text-gray-300 dark:text-gray-500 hover:text-orange-400 transition-colors p-1 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-900/30"
               title="Edit restaurant"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -89,7 +89,7 @@ export default function RestaurantCard({ restaurant, onDeleted }: Props) {
             </button>
             <button
               onClick={() => setShowDeleteModal(true)}
-              className="text-gray-300 hover:text-red-400 transition-colors p-1 rounded-lg hover:bg-red-50"
+              className="text-gray-300 dark:text-gray-500 hover:text-red-400 transition-colors p-1 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30"
               title="Delete restaurant"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -105,7 +105,7 @@ export default function RestaurantCard({ restaurant, onDeleted }: Props) {
             {restaurant.tags.map((tag) => (
               <span
                 key={tag.id}
-                className="bg-orange-50 text-orange-600 text-xs font-semibold px-2.5 py-0.5 rounded-full border border-orange-100"
+                className="bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 text-xs font-semibold px-2.5 py-0.5 rounded-full border border-orange-100 dark:border-orange-800"
               >
                 {tag.name}
               </span>
@@ -115,14 +115,14 @@ export default function RestaurantCard({ restaurant, onDeleted }: Props) {
 
         {/* Description */}
         {restaurant.description && (
-          <p className="text-sm text-gray-600 mt-3 leading-relaxed">{restaurant.description}</p>
+          <p className="text-sm text-gray-600 dark:text-gray-300 mt-3 leading-relaxed">{restaurant.description}</p>
         )}
 
         {/* Comments toggle */}
-        <div className="mt-4 pt-4 border-t border-gray-50">
+        <div className="mt-4 pt-4 border-t border-gray-50 dark:border-gray-700">
           <button
             onClick={() => setShowComments(!showComments)}
-            className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-orange-500 transition-colors"
+            className="flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-orange-500 transition-colors"
           >
             <span className="text-base">💬</span>
             {showComments ? 'Hide comments' : 'Comments'}

@@ -81,7 +81,7 @@ export default function DeleteRestaurantModal({ restaurant, onClose, onDeleted }
   return (
     <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={onClose}>
       <div
-        className="bg-white rounded-2xl shadow-lg border border-gray-100 w-full max-w-sm overflow-hidden"
+        className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 w-full max-w-sm overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -93,12 +93,12 @@ export default function DeleteRestaurantModal({ restaurant, onClose, onDeleted }
         </div>
 
         <div className="p-5 space-y-4">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600 dark:text-gray-300">
             Are you sure you want to delete <strong>{restaurant.name}</strong>? This action cannot be undone.
           </p>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+            <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5">
               Admin Code
             </label>
             <input
@@ -106,7 +106,7 @@ export default function DeleteRestaurantModal({ restaurant, onClose, onDeleted }
               value={code}
               onChange={(e) => setCode(e.target.value)}
               placeholder="Enter admin code"
-              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-red-300 focus:border-transparent outline-none"
+              className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-2.5 text-sm dark:text-gray-200 focus:ring-2 focus:ring-red-300 dark:focus:ring-red-700 focus:border-transparent outline-none"
               onKeyDown={(e) => {
                 if (e.key === 'Enter') handleDelete()
               }}
@@ -115,7 +115,7 @@ export default function DeleteRestaurantModal({ restaurant, onClose, onDeleted }
           </div>
 
           {error && (
-            <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-3 py-2">{error}</p>
+            <p className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-xl px-3 py-2">{error}</p>
           )}
 
           <div className="flex gap-3 pt-1">
@@ -123,7 +123,7 @@ export default function DeleteRestaurantModal({ restaurant, onClose, onDeleted }
               type="button"
               onClick={onClose}
               disabled={deleting}
-              className="flex-1 px-4 py-2.5 text-sm font-semibold text-gray-600 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
+              className="flex-1 px-4 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors disabled:opacity-50"
             >
               Cancel
             </button>

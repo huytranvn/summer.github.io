@@ -46,12 +46,12 @@ export default function RestaurantList({ selectedTagIds, refreshKey, onDeleted }
         )
 
   if (loading) {
-    return <p className="text-center text-gray-400 py-12">Loading restaurants...</p>
+    return <p className="text-center text-gray-400 dark:text-gray-500 py-12">Loading restaurants...</p>
   }
 
   if (restaurants.length === 0) {
     return (
-      <p className="text-center text-gray-400 py-12">
+      <p className="text-center text-gray-400 dark:text-gray-500 py-12">
         No restaurants yet. Add the first one above!
       </p>
     )
@@ -59,7 +59,7 @@ export default function RestaurantList({ selectedTagIds, refreshKey, onDeleted }
 
   if (filtered.length === 0) {
     return (
-      <p className="text-center text-gray-400 py-12">
+      <p className="text-center text-gray-400 dark:text-gray-500 py-12">
         No restaurants match the selected tags.
       </p>
     )

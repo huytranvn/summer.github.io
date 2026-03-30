@@ -84,9 +84,9 @@ export default function CommentSection({ restaurantId }: { restaurantId: string 
   return (
     <div className="mt-4 space-y-4">
       {loading ? (
-        <p className="text-xs text-gray-400 py-2">Loading...</p>
+        <p className="text-xs text-gray-400 dark:text-gray-500 py-2">Loading...</p>
       ) : comments.length === 0 ? (
-        <p className="text-xs text-gray-400 py-2">No comments yet — be the first!</p>
+        <p className="text-xs text-gray-400 dark:text-gray-500 py-2">No comments yet — be the first!</p>
       ) : (
         <ul className="space-y-3">
           {comments.map((c) => (
@@ -96,21 +96,21 @@ export default function CommentSection({ restaurantId }: { restaurantId: string 
                 {initials(c.author_name)}
               </div>
               {/* Bubble */}
-              <div className="bg-gray-50 rounded-2xl rounded-tl-sm px-4 py-2.5 flex-1">
+              <div className="bg-gray-50 dark:bg-gray-700 rounded-2xl rounded-tl-sm px-4 py-2.5 flex-1">
                 <div className="flex items-baseline gap-2 mb-1">
-                  <span className="text-sm font-semibold text-gray-800">{c.author_name || 'Anonymous'}</span>
-                  <span className="text-xs text-gray-400">
+                  <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">{c.author_name || 'Anonymous'}</span>
+                  <span className="text-xs text-gray-400 dark:text-gray-500">
                     {new Date(c.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                   </span>
                 </div>
-                <p className="text-sm text-gray-600 leading-relaxed">{c.content}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{c.content}</p>
                 {c.comment_photos && c.comment_photos.length > 0 && (
                   <div className="mt-2 flex gap-1.5 flex-wrap">
                     {c.comment_photos.map((photo) => (
                       <button
                         key={photo.id}
                         onClick={() => setLightbox(photo.url)}
-                        className="shrink-0 w-20 h-20 rounded-lg overflow-hidden border border-gray-200 hover:opacity-90 transition-opacity"
+                        className="shrink-0 w-20 h-20 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-600 hover:opacity-90 transition-opacity"
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={photo.url} alt="Comment photo" className="w-full h-full object-cover" />
@@ -126,7 +126,7 @@ export default function CommentSection({ restaurantId }: { restaurantId: string 
 
       {/* Add comment form */}
       <form onSubmit={handleSubmit} className="flex gap-3 pt-2">
-        <div className="shrink-0 w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 text-xs font-bold">
+        <div className="shrink-0 w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center text-gray-400 dark:text-gray-300 text-xs font-bold">
           +
         </div>
         <div className="flex-1 space-y-2">
@@ -135,7 +135,7 @@ export default function CommentSection({ restaurantId }: { restaurantId: string 
             value={author}
             onChange={(e) => setAuthor(e.target.value)}
             placeholder="Your name (optional)"
-            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-transparent transition"
+            className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2 text-sm text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-200 dark:focus:ring-orange-700 focus:border-transparent transition"
           />
           <div className="flex gap-2">
             <input
@@ -143,10 +143,10 @@ export default function CommentSection({ restaurantId }: { restaurantId: string 
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="Write a comment..."
-              className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-transparent transition"
+              className="flex-1 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2 text-sm text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-200 dark:focus:ring-orange-700 focus:border-transparent transition"
             />
             <label
-              className="shrink-0 flex items-center justify-center w-10 h-10 rounded-xl bg-gray-50 border border-gray-200 hover:bg-orange-50 hover:border-orange-200 cursor-pointer transition-colors"
+              className="shrink-0 flex items-center justify-center w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-orange-50 dark:hover:bg-orange-900/30 hover:border-orange-200 dark:hover:border-orange-700 cursor-pointer transition-colors"
               title="Attach photos"
             >
               <span className="text-lg">📷</span>
@@ -172,7 +172,7 @@ export default function CommentSection({ restaurantId }: { restaurantId: string 
               {previews.map((src, i) => (
                 <div key={i} className="relative shrink-0">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={src} alt="preview" className="w-14 h-14 rounded-lg object-cover border border-gray-200" />
+                  <img src={src} alt="preview" className="w-14 h-14 rounded-lg object-cover border border-gray-200 dark:border-gray-600" />
                   <button
                     type="button"
                     onClick={() => {

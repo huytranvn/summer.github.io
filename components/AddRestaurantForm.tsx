@@ -188,7 +188,7 @@ export default function AddRestaurantForm({ onAdded, restaurant: editRestaurant,
   const formContent = (
     <form
       onSubmit={handleSubmit}
-      className="bg-white rounded-2xl shadow-lg border border-orange-100 overflow-hidden"
+      className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-orange-100 dark:border-gray-700 overflow-hidden"
     >
           {/* Form header */}
           <div className="bg-gradient-to-r from-orange-500 to-rose-400 px-6 py-4 flex items-center justify-between">
@@ -206,7 +206,7 @@ export default function AddRestaurantForm({ onAdded, restaurant: editRestaurant,
             {/* Name + Location */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+                <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5">
                   Name <span className="text-orange-400">*</span>
                 </label>
                 <input
@@ -215,11 +215,11 @@ export default function AddRestaurantForm({ onAdded, restaurant: editRestaurant,
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g. Ichiran Ramen"
                   required
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent transition"
+                  className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-2.5 text-sm text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-300 dark:focus:ring-orange-700 focus:border-transparent transition"
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+                <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5">
                   Location
                 </label>
                 <input
@@ -228,14 +228,14 @@ export default function AddRestaurantForm({ onAdded, restaurant: editRestaurant,
                   value={location}
                   onChange={(e) => { setLocation(e.target.value); setPlaceId(null) }}
                   placeholder="e.g. Ichiran Ramen Tokyo"
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent transition"
+                  className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-2.5 text-sm text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-300 dark:focus:ring-orange-700 focus:border-transparent transition"
                 />
               </div>
             </div>
 
             {/* Description */}
             <div>
-              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+              <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5">
                 Description
               </label>
               <textarea
@@ -243,13 +243,13 @@ export default function AddRestaurantForm({ onAdded, restaurant: editRestaurant,
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="What did you order? How was the experience?"
                 rows={3}
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent transition resize-none"
+                className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-2.5 text-sm text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-300 dark:focus:ring-orange-700 focus:border-transparent transition resize-none"
               />
             </div>
 
             {/* Operating Hours */}
             <div>
-              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+              <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5">
                 Operating Hours
               </label>
               <label className="inline-flex items-center gap-2 cursor-pointer mb-3">
@@ -257,28 +257,28 @@ export default function AddRestaurantForm({ onAdded, restaurant: editRestaurant,
                   type="checkbox"
                   checked={isAllDay}
                   onChange={(e) => setIsAllDay(e.target.checked)}
-                  className="w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-300"
+                  className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-orange-500 focus:ring-orange-300 dark:focus:ring-orange-700"
                 />
-                <span className="text-sm text-gray-600">All day</span>
+                <span className="text-sm text-gray-600 dark:text-gray-300">All day</span>
               </label>
               {!isAllDay && (
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs text-gray-400 mb-1">Open</label>
+                    <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1">Open</label>
                     <input
                       type="time"
                       value={openTime}
                       onChange={(e) => setOpenTime(e.target.value)}
-                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent transition"
+                      className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-2.5 text-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-300 dark:focus:ring-orange-700 focus:border-transparent transition"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-400 mb-1">Close</label>
+                    <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1">Close</label>
                     <input
                       type="time"
                       value={closeTime}
                       onChange={(e) => setCloseTime(e.target.value)}
-                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent transition"
+                      className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-2.5 text-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-300 dark:focus:ring-orange-700 focus:border-transparent transition"
                     />
                   </div>
                 </div>
@@ -287,7 +287,7 @@ export default function AddRestaurantForm({ onAdded, restaurant: editRestaurant,
 
             {/* Tags */}
             <div>
-              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+              <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5">
                 Tags
               </label>
               {selectedTags.length > 0 && (
@@ -295,7 +295,7 @@ export default function AddRestaurantForm({ onAdded, restaurant: editRestaurant,
                   {selectedTags.map((tag) => (
                     <span
                       key={tag}
-                      className="inline-flex items-center gap-1 bg-orange-100 text-orange-700 text-xs font-semibold px-2.5 py-1 rounded-full"
+                      className="inline-flex items-center gap-1 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 text-xs font-semibold px-2.5 py-1 rounded-full"
                     >
                       {tag}
                       <button type="button" onClick={() => removeTag(tag)} className="hover:text-orange-900 text-base leading-none">×</button>
@@ -313,14 +313,14 @@ export default function AddRestaurantForm({ onAdded, restaurant: editRestaurant,
                     if (e.key === ',') { e.preventDefault(); addTag(tagInput) }
                   }}
                   placeholder="Type a tag, press Enter — e.g. ramen, vegan, hidden-gem"
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent transition"
+                  className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-2.5 text-sm text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-300 dark:focus:ring-orange-700 focus:border-transparent transition"
                 />
                 {suggestions.length > 0 && (
-                  <ul className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden max-h-40 overflow-y-auto">
+                  <ul className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl shadow-lg overflow-hidden max-h-40 overflow-y-auto">
                     {suggestions.map((t) => (
                       <li
                         key={t.id}
-                        className="px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 cursor-pointer"
+                        className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-orange-900/30 cursor-pointer"
                         onMouseDown={(e) => { e.preventDefault(); addTag(t.name) }}
                       >
                         {t.name}
@@ -333,12 +333,12 @@ export default function AddRestaurantForm({ onAdded, restaurant: editRestaurant,
 
             {/* Photos */}
             <div>
-              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+              <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5">
                 Photos
               </label>
-              <label className="flex items-center gap-3 cursor-pointer bg-gray-50 border border-dashed border-gray-300 hover:border-orange-300 hover:bg-orange-50 rounded-xl px-4 py-3 transition-colors group">
+              <label className="flex items-center gap-3 cursor-pointer bg-gray-50 dark:bg-gray-700 border border-dashed border-gray-300 dark:border-gray-600 hover:border-orange-300 dark:hover:border-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-xl px-4 py-3 transition-colors group">
                 <span className="text-2xl">📷</span>
-                <span className="text-sm text-gray-500 group-hover:text-orange-500">
+                <span className="text-sm text-gray-500 dark:text-gray-400 group-hover:text-orange-500">
                   {photos.length > 0 ? `${photos.length} photo(s) selected` : 'Click to upload photos'}
                 </span>
                 <input
@@ -355,7 +355,7 @@ export default function AddRestaurantForm({ onAdded, restaurant: editRestaurant,
                   {existingPhotos.map((photo) => (
                     <div key={photo.id} className="relative shrink-0">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={photo.url} alt="existing" className="w-16 h-16 rounded-lg object-cover border border-gray-200" />
+                      <img src={photo.url} alt="existing" className="w-16 h-16 rounded-lg object-cover border border-gray-200 dark:border-gray-600" />
                       <button
                         type="button"
                         onClick={() => removeExistingPhoto(photo)}
@@ -375,7 +375,7 @@ export default function AddRestaurantForm({ onAdded, restaurant: editRestaurant,
                       key={i}
                       src={src}
                       alt="preview"
-                      className="shrink-0 w-16 h-16 rounded-lg object-cover border border-gray-200"
+                      className="shrink-0 w-16 h-16 rounded-lg object-cover border border-gray-200 dark:border-gray-600"
                     />
                   ))}
                 </div>
@@ -383,12 +383,12 @@ export default function AddRestaurantForm({ onAdded, restaurant: editRestaurant,
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3">
+              <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-sm rounded-xl px-4 py-3">
                 {error}
               </div>
             )}
             {success && (
-              <div className="bg-green-50 border border-green-200 text-green-700 text-sm rounded-xl px-4 py-3 flex items-center gap-2">
+              <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 text-sm rounded-xl px-4 py-3 flex items-center gap-2">
                 <span>✓</span> {isEdit ? 'Restaurant updated!' : 'Restaurant added!'}
               </div>
             )}
@@ -411,7 +411,7 @@ export default function AddRestaurantForm({ onAdded, restaurant: editRestaurant,
       {!open ? (
         <button
           onClick={() => setOpen(true)}
-          className="w-full flex items-center justify-center gap-2 bg-white border-2 border-dashed border-orange-300 hover:border-orange-400 hover:bg-orange-50 text-orange-500 font-semibold py-4 rounded-2xl transition-all group"
+          className="w-full flex items-center justify-center gap-2 bg-white dark:bg-gray-800 border-2 border-dashed border-orange-300 dark:border-orange-600 hover:border-orange-400 dark:hover:border-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20 text-orange-500 font-semibold py-4 rounded-2xl transition-all group"
         >
           <span className="text-xl group-hover:scale-110 transition-transform">+</span>
           Add a new spot
