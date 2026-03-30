@@ -4,10 +4,17 @@ import { useState } from 'react'
 import Image from 'next/image'
 import { Restaurant } from '@/lib/supabase'
 import CommentSection from './CommentSection'
+import DeleteRestaurantModal from './DeleteRestaurantModal'
 
-export default function RestaurantCard({ restaurant }: { restaurant: Restaurant }) {
+type Props = {
+  restaurant: Restaurant
+  onDeleted: () => void
+}
+
+export default function RestaurantCard({ restaurant, onDeleted }: Props) {
   const [showComments, setShowComments] = useState(false)
   const [lightbox, setLightbox] = useState<string | null>(null)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
@@ -48,9 +55,20 @@ export default function RestaurantCard({ restaurant }: { restaurant: Restaurant 
               </a>
             )}
           </div>
-          <span className="text-xs text-gray-400 bg-gray-50 px-2.5 py-1 rounded-full shrink-0 mt-0.5">
-            {new Date(restaurant.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-          </span>
+          <div className="flex items-center gap-1.5 shrink-0 mt-0.5">
+            <span className="text-xs text-gray-400 bg-gray-50 px-2.5 py-1 rounded-full">
+              {new Date(restaurant.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+            </span>
+            <button
+              onClick={() => setShowDeleteModal(true)}
+              className="text-gray-300 hover:text-red-400 transition-colors p-1 rounded-lg hover:bg-red-50"
+              title="Delete restaurant"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 6h18" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+              </svg>
+            </button>
+          </div>
         </div>
 
         {/* Tags */}
@@ -85,6 +103,15 @@ export default function RestaurantCard({ restaurant }: { restaurant: Restaurant 
           {showComments && <CommentSection restaurantId={restaurant.id} />}
         </div>
       </div>
+
+      {/* Delete modal */}
+      {showDeleteModal && (
+        <DeleteRestaurantModal
+          restaurant={restaurant}
+          onClose={() => setShowDeleteModal(false)}
+          onDeleted={onDeleted}
+        />
+      )}
 
       {/* Lightbox */}
       {lightbox && (

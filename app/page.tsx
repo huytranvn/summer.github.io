@@ -32,7 +32,7 @@ export default function Home() {
         refreshKey={refreshKey}
       />
 
-      <RestaurantList selectedTagIds={selectedTagIds} refreshKey={refreshKey} />
+      <RestaurantList selectedTagIds={selectedTagIds} refreshKey={refreshKey} onDeleted={handleAdded} />
     </main>
   )
 }

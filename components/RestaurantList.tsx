@@ -7,9 +7,10 @@ import RestaurantCard from './RestaurantCard'
 type Props = {
   selectedTagIds: string[]
   refreshKey: number
+  onDeleted: () => void
 }
 
-export default function RestaurantList({ selectedTagIds, refreshKey }: Props) {
+export default function RestaurantList({ selectedTagIds, refreshKey, onDeleted }: Props) {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -67,7 +68,7 @@ export default function RestaurantList({ selectedTagIds, refreshKey }: Props) {
   return (
     <div className="space-y-5">
       {filtered.map((r) => (
-        <RestaurantCard key={r.id} restaurant={r} />
+        <RestaurantCard key={r.id} restaurant={r} onDeleted={onDeleted} />
       ))}
     </div>
   )
