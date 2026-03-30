@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { supabase, Comment } from '@/lib/supabase'
+import { getSupabase, Comment } from '@/lib/supabase'
 
 export default function CommentSection({ restaurantId }: { restaurantId: string }) {
   const [comments, setComments] = useState<Comment[]>([])
@@ -11,7 +11,7 @@ export default function CommentSection({ restaurantId }: { restaurantId: string 
   const [submitting, setSubmitting] = useState(false)
 
   const fetchComments = async () => {
-    const { data } = await supabase
+    const { data } = await getSupabase()
       .from('comments')
       .select('*')
       .eq('restaurant_id', restaurantId)
@@ -26,7 +26,7 @@ export default function CommentSection({ restaurantId }: { restaurantId: string 
     e.preventDefault()
     if (!content.trim()) return
     setSubmitting(true)
-    await supabase.from('comments').insert({
+    await getSupabase().from('comments').insert({
       restaurant_id: restaurantId,
       author_name: author.trim() || null,
       content: content.trim(),

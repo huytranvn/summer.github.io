@@ -26,8 +26,8 @@ jobs:
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-          # Replace with your actual repo name, e.g. /summer-vacation-2026
-          NEXT_PUBLIC_BASE_PATH: /summer-vacation-2026
+          NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: ${{ secrets.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY }}
+          NEXT_PUBLIC_BASE_PATH: ""
 
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v4

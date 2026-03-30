@@ -274,6 +274,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/google.maps@npm:^3.58.1":
+  version: 3.58.1
+  resolution: "@types/google.maps@npm:3.58.1"
+  checksum: 10c0/0247c61d2aeb216d04ab9392602ef41d58328c6336ed4e9a4e9e69834002e82c116a34def2bf4ceb31c4292f14899815058da4bb8d803147295c6b47c1162621
+  languageName: node
+  linkType: hard
+
 "@types/node@npm:*, @types/node@npm:^20.0.0":
   version: 20.19.37
   resolution: "@types/node@npm:20.19.37"
@@ -1495,6 +1502,7 @@ __metadata:
   resolution: "summer-vacation-2026@workspace:."
   dependencies:
     "@supabase/supabase-js": "npm:^2.100.1"
+    "@types/google.maps": "npm:^3.58.1"
     "@types/node": "npm:^20.0.0"
     "@types/react": "npm:^18.0.0"
     "@types/react-dom": "npm:^18.0.0"

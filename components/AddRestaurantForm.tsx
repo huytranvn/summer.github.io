@@ -1,12 +1,13 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { supabase, Tag } from '@/lib/supabase'
+import { getSupabase, Tag } from '@/lib/supabase'
 
 export default function AddRestaurantForm({ onAdded }: { onAdded: () => void }) {
   const [open, setOpen] = useState(false)
   const [name, setName] = useState('')
   const [location, setLocation] = useState('')
+  const [placeId, setPlaceId] = useState<string | null>(null)
   const [description, setDescription] = useState('')
   const [tagInput, setTagInput] = useState('')
   const [selectedTags, setSelectedTags] = useState<string[]>([])
@@ -17,12 +18,28 @@ export default function AddRestaurantForm({ onAdded }: { onAdded: () => void }) 
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
+  const locationRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    supabase.from('tags').select('*').order('name').then(({ data }) => {
+    getSupabase().from('tags').select('*').order('name').then(({ data }) => {
       if (data) setAllTags(data)
     })
   }, [])
+
+  // Attach Google Places Autocomplete once the form is open and the input is mounted
+  useEffect(() => {
+    if (!open || !locationRef.current) return
+    if (typeof google === 'undefined' || !google.maps?.places) return
+
+    const autocomplete = new google.maps.places.Autocomplete(locationRef.current, {
+      types: ['establishment', 'geocode'],
+    })
+    autocomplete.addListener('place_changed', () => {
+      const place = autocomplete.getPlace()
+      setLocation(place.formatted_address ?? place.name ?? '')
+      setPlaceId(place.place_id ?? null)
+    })
+  }, [open])
 
   const addTag = (tagName: string) => {
     const trimmed = tagName.trim().toLowerCase()
@@ -48,9 +65,9 @@ export default function AddRestaurantForm({ onAdded }: { onAdded: () => void }) 
     setError(null)
 
     try {
-      const { data: restaurant, error: restError } = await supabase
+      const { data: restaurant, error: restError } = await getSupabase()
         .from('restaurants')
-        .insert({ name: name.trim(), location: location.trim() || null, description: description.trim() || null })
+        .insert({ name: name.trim(), location: location.trim() || null, description: description.trim() || null, place_id: placeId })
         .select()
         .single()
       if (restError) throw restError
@@ -58,25 +75,25 @@ export default function AddRestaurantForm({ onAdded }: { onAdded: () => void }) 
       for (const file of photos) {
         const ext = file.name.split('.').pop()
         const path = `${restaurant.id}/${Date.now()}.${ext}`
-        const { error: uploadError } = await supabase.storage.from('restaurant-photos').upload(path, file)
+        const { error: uploadError } = await getSupabase().storage.from('restaurant-photos').upload(path, file)
         if (uploadError) throw uploadError
-        const { data: urlData } = supabase.storage.from('restaurant-photos').getPublicUrl(path)
-        await supabase.from('photos').insert({ restaurant_id: restaurant.id, url: urlData.publicUrl })
+        const { data: urlData } = getSupabase().storage.from('restaurant-photos').getPublicUrl(path)
+        await getSupabase().from('photos').insert({ restaurant_id: restaurant.id, url: urlData.publicUrl })
       }
 
       for (const tagName of selectedTags) {
-        const { data: tag } = await supabase
+        const { data: tag } = await getSupabase()
           .from('tags')
           .upsert({ name: tagName }, { onConflict: 'name' })
           .select()
           .single()
         if (tag) {
-          await supabase.from('restaurant_tags').insert({ restaurant_id: restaurant.id, tag_id: tag.id })
+          await getSupabase().from('restaurant_tags').insert({ restaurant_id: restaurant.id, tag_id: tag.id })
         }
       }
 
       setName(''); setLocation(''); setDescription('')
-      setSelectedTags([]); setTagInput('')
+      setPlaceId(null); setSelectedTags([]); setTagInput('')
       setPhotos([]); setPreviews([])
       if (fileRef.current) fileRef.current.value = ''
       setSuccess(true)
@@ -141,10 +158,11 @@ export default function AddRestaurantForm({ onAdded }: { onAdded: () => void }) 
                   Location
                 </label>
                 <input
+                  ref={locationRef}
                   type="text"
                   value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  placeholder="e.g. Tokyo, Japan"
+                  onChange={(e) => { setLocation(e.target.value); setPlaceId(null) }}
+                  placeholder="e.g. Ichiran Ramen Tokyo"
                   className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent transition"
                 />
               </div>

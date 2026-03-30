@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { supabase, Restaurant } from '@/lib/supabase'
+import { getSupabase, Restaurant } from '@/lib/supabase'
 import RestaurantCard from './RestaurantCard'
 
 type Props = {
@@ -16,7 +16,7 @@ export default function RestaurantList({ selectedTagIds, refreshKey }: Props) {
   useEffect(() => {
     setLoading(true)
     const fetchAll = async () => {
-      const { data } = await supabase
+      const { data } = await getSupabase()
         .from('restaurants')
         .select(`
           *,

@@ -33,10 +33,19 @@ export default function RestaurantCard({ restaurant }: { restaurant: Restaurant 
           <div className="flex-1 min-w-0">
             <h3 className="text-lg font-bold text-gray-900 truncate">{restaurant.name}</h3>
             {restaurant.location && (
-              <p className="text-sm text-gray-500 mt-0.5 flex items-center gap-1">
+              <a
+                href={
+                  restaurant.place_id
+                    ? `https://www.google.com/maps/place/?q=place_id:${restaurant.place_id}`
+                    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(restaurant.location)}`
+                }
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-gray-500 mt-0.5 flex items-center gap-1 hover:text-orange-500 transition-colors w-fit"
+              >
                 <span>📍</span>
-                <span>{restaurant.location}</span>
-              </p>
+                <span className="underline underline-offset-2">{restaurant.location}</span>
+              </a>
             )}
           </div>
           <span className="text-xs text-gray-400 bg-gray-50 px-2.5 py-1 rounded-full shrink-0 mt-0.5">

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { supabase, Tag } from '@/lib/supabase'
+import { getSupabase, Tag } from '@/lib/supabase'
 
 type Props = {
   selectedTags: string[]
@@ -13,7 +13,7 @@ export default function TagFilter({ selectedTags, onChange, refreshKey }: Props)
   const [tags, setTags] = useState<Tag[]>([])
 
   useEffect(() => {
-    supabase.from('tags').select('*').order('name').then(({ data }) => {
+    getSupabase().from('tags').select('*').order('name').then(({ data }) => {
       if (data) setTags(data)
     })
   }, [refreshKey])
